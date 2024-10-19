@@ -1,0 +1,846 @@
+tmux -- ctrl + b + shift + 5 or ctrl + b + shift + "
+ctrl + b + up-arrow 
+ctrl + b + left-arroe
+exit, exit,exit,exit -- for existing the machine
+date
+echo $(date)
+
+for i in {1..10};
+do
+echo $(date)
+sleep 1
+done
+
+delimitor -- space in fields
+for i in {1..10}
+do
+echo $(date) | awk -F(fields) "(for removing space in the fields)" '{print $1}'
+sleep 1
+done
+echo $(date) | awk -F " " '{print $1,$2,$3,$4}'
+sleep 1
+done
+SG='mahesh'
+echo $SG
+SG="mahesh"
+echo $SG
+echo "$SG"
+
+variable declaration with the help of single and double quotes
+x=10
+SG='mahesh-ops-$x'     or  SG="mahesh-ops-$x"
+echo $SG -- it will directly give like mahes-ops-$x
+echo  $SG -- it will give like mahesh-ops-10
+
+install aws cli in ec2 instance ubuntu -- create a iam role and add permissions like ec2 and s3 full permission
+attach to the instance
+aws s3 ls | cut -d " " -f 2
+aws s3 ls | cut -d " " -f 3
+aws s3 ls | cut -d " " -f 2 > test.logs
+aws s3 ls | cut -d " " -f 1,2,3  or -f 2,3  or  -f 3
+we can't do field reversing using cut
+aws s3 ls | cut -d " " -f 3,2,1
+
+aws s3 ls | awk -F " " '{print $1}'
+aws s3 ls | awk -F " " '{print $1,$2}'
+aws s3 ls | awk -F " " {print $1,$2,$3}'
+aws s3 ls | awk -F " " '{print $2,$3}'
+aws s3 ls | awk -F " " {print $3,$2,$1}'
+
+grep -- granular regular expressions 
+aws s3 ls | cut -d " " -f 3 | grep -i www.
+aws s3 ls | cut -d " " -f 3 | grep -E www[.] or [-]
+
+.sh or .abc also we can give 
+no one will give 777 permissions in real time -- linux server 
+!#/bin/bash -- shebang line or octocrap
+aws s3 ls | cut -d " " -f 3 | grep -E www[.]
+echo "hello mahesh from devsecops"
+permission has to check
+bash script.abc or  ./script.abc
+
+#! /bin/bash
+set -x  -- it will run in debug mode
+
+
+
+
+
+
+
+
+Docker
+Virtual machies vs containers
+install net-tools for ifconfig and jq for docker container logs-shows logs in clear way
+curl https://get.docker.com/ | bash
+docker --version
+docker0 -- network
+docker network ls
+docker version
+docker info
+ps -ef
+? -- question mark refers daemon -- run as daemon
+pts/1 -- run as a user
+lsns
+lsns -t pid
+watch lsns -t pid
+
+for i in {1..10}; do
+docker run -dit nginx:latest
+done
+
+kiran2361993/rollingupdate:v10
+/var/lib/docker/containers  for logs in containers
+jq for seeing the container logs
+cat container-json.log | jq
+docker inspect container-id or name
+
+#root volume not exceeding 50%
+create an EBS volume -- format -- make fs -- mount it in /etc/fstab
+docker directory service -- modifications in config -- create a dir here -- mount  to /etc/fstab
+stores container data in this directory
+/var/lib/docker -- containers data will store
+df -h
+create an EBS volume of 10GiB -- add or attach this volume to the existing docker instance
+lsblk
+df -h
+fdisk /dev/xvdf
+n
+primary
+lsblk
+mkfs.ext4 /dev/xvdf1
+copy UUID 
+mkdir /dockerdata
+vi /etc/fstab
+mount -a
+df -h
+cd /dockerdata
+ls -al
+for i in {1..10}; do
+echo $(date) > FILE-$I
+done
+for checking the files 
+after that we have to stop docker.service and docker.socket and add the root volume for volume created
+kiran2361993/troubleshootingtools:v1 
+prom/node-exporter -- run in host network
+
+Volumes & Bind Mode -- Portainer-monitoring tool for containers,volumes
+docker run -dit --name mongodb -p 27017:27017 mongo:latest -- it will terminate means the data will loss
+add some data 
+docker volume create mongodb
+docker run -dit --name mongodb -v mongodb:/data/db -p 27017:27017 mongo:latest
+docker ps
+docker exec -it mongodb mongosh
+show dbs;
+Bind Modes
+docker run -dit --name app1 --network none kiran2361993/troubleshootingtools:v1 
+docker exec -it app1 bash
+docker ps -- it wont work -- bcz docker is running in host system
+docker run --rm -d --name app1 -v /var/run/docker.sock:/var/run/docker.sock --network  none kiran2361993/troubleshootingtools:v1
+socket -- it wil go and retrieve the information from host
+go inside container -- now try docker ps -- it will work
+portainer -- gives user interface 
+ip:9443
+
+
+docker build -t image-name:v1 --progress=plain 
+docker exec -it app1 env
+docker run -dit --rm --name app2 -e AWS_ACCESS_KEY=hidden -e AWS_SECRET_KEY=hidden -e AWS_DEFAULT_REGION=hidden -- for overritten env variables
+docker system prune -- all stopped containers,images,networks etc.., -- danggling images
+CMD -- we can overrite from the CLI -- values can be change
+ENTRYPOINT -- 
+
+Distroless Images -- MultiBuild--Dockerfile
+Dev -- code -- write -- perform -- SAST(Static Application security test--checkmarx,sonarqube) -- build(the artifact)maven -- dockerfile(copy artifact into the container) -- build this dockerfile -- docker image -- store in -- Dockerhub/ECR
+sonarqube -- test -- vulnerabilities,bugs, -- we will rise PR
+Google distroless images -- light weight,doesn't contain shell -- image size is like 2 or 3MB
+docker history
+docker multi build --  stage1-maven(base image-build), stage2-alpine(image-jdk17-runtime)
+google -- distroless images
+google -- spring petclinic project
+docker history image
+
+Docker-Compose
+github -- sample-voting-application
+dockerfile --write -- build -- image
+docker run -dit --name test -p 8080:8080 image-name:v1
+eg: 29-containers -- new realise -- 
+Redis -- In-memory db -- caches the memory -- fast performance -- speed retrieval and speed processing
+sql,mongo,doc-db's -- structured and unstructured data
+custom nrtwork -- has DNS resolution -- bridge network -- has no DNS resolution
+docker compose installation
+create a docker files  like dockerfile.dev , dockerfile.prod, dockerfile,prod
+google -- docker compose github -- linux
+compose --version
+docker compose up --build  dev or prod or staging
+docker compose up -d
+voting app github
+
+docker swarm
+
+docker secrets -- file based mount -- IAM user with admin view -- copy access key and secret key into one file --
+create one secret -- stack -- mount this file to ssh/authorize
+aws s3 ls -- network create --  app
+
+Ingress -- Nginx,Kong,AWS NLB,Traefik
+
+
+
+
+Saikiran Pinaputhruni
+----------------------------
+Observality -- 
+Monitoring agents -- Based on CPU,memory and disc utilization
+Logging agents -- Based on the server load it will generate logs, mongodb not connecting to endpoint logs , errors like 404. 503
+ELK --- elasticsearch logstash kibana -- log aggregator(collect all logs from agents--process to ELK stack) -- agents -- heartbeat/fluentd/logstash/filebeat
+Kibana for visualizing the logs from ELK
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Pod -- one or more containers with shared storage and shared network
+Sidecar container
+Scaling
+Pod communication - unique ip address and network ports
+kubectl run nginx-pod(nameof thepod) --image=nginx
+kubectl get pods
+kubectl api-resouces | grep pods
+pod.yml
+kubectl apply or create -f pod..yml
+kubecl delete pod pod-name
+kubectl get pods -l team=dev
+kubectl get pods -l team=dev,app=frontend
+kubecl get pod pod-name -o wide
+kubecl get pod pod-name -o yaml
+kubectl describe pod pod-name
+kubectl exec -it pod-name -- bash or /bin/bash or /bin/sh
+kubectl exec -it pod-name -c container-name -- bash
+kubectl port-forward pod-name 80:80 (hostport:containerport)
+kubectl logs pod-name
+kubectl delete -f pod.yml
+kubectl get po
+kubectl get pods -n namespace-name
+
+ReplicaSets -- Self Healing, High Availability Kubernetes
+Deployments -- Rollout, and Rollback in Kubernetes
+kubectl api-resources  | grep replicaset
+Selectors -- labels
+nginx-replicaset.yml
+kubectl apply or create -f nginx-replicaset.yml
+kubectl get rs
+kubectl get po
+kubectl delete pod pod-name
+kubectl get nodes
+kubectl delete all --all
+kubectl get all
+kubectl apply or create -f deployment.yml
+kubectl get deploy or deployments
+kubectl get rs or replicasets
+kubectl get po --show-labels
+kubectl scale  deployment/deployment-name --replicas=3
+kubectl set image deployment/deployment-name container-name=nginx:1.21
+kubectl describe pod pod-name
+kubectl rollout history deployment/deployment-name
+kubectl set image deployment/deployment-name container-name=nginx:1.21 --record
+kubectl rollout undo deployment/deployment-name --to-revision=1
+kubectl rollout status deploymen/deployment-name
+
+Services -- Loadbalancing, service discovery, zero downtime deployments
+labels and selectors
+ngixn-service.yml
+kubectl apply or create -f nginx-service.yml
+kubectl get svc or services
+kubectl exec -it pod-name -- bash or --sh
+kubectl port-forward service/service-name 8083:8082
+kubectl get pod
+kubectl exec -it pod-name -- sh
+i=1
+while [ "$i" -le 20]]; do
+	curl nginx-service:8082;
+	i=$(( i + 1))
+done
+kubectl logs -f pod-name
+kubectl get endpoinds -- service create - endpoint also create
+kubectl describe service service-name
+Multport-service -- helps in side car containers -- just like prometheus exporters
+Cluster IP, Nodeport IP(30000-32767), LoadBalancer
+
+Ingress -- TLS keys -- cert,key, docker images in private registry -- pass credentials in  k8s secret
+allow the users in most secure way to access resources
+SSL Termination,Path based routing,host based routing,LB
+Create one normal EV2 instance -- 
+google -- github repo -- Installation of certbot
+sudo snap install --classic certbot
+then after perform another cmd
+copy _acme_challenge -- go to route53 -- add record for this and copy paste the text record in value section
+record type is text -- simple routing policy
+tls.crt
+tls.key
+then after deploy the ingress controller in master
+go to tmp location in master
+here copy and paste the cert keys of tls in master
+create a secret in k8s -- in tmp location
+kubectl get secrets
+kubectl describe secrets nginx-tls-default
+data has to come in kbs not in zeros
+images has to be keep in private registry
+docker images
+docker tag image:name privatname:image(kiran2361993/testing:latestappresults
+docker push 
+vote image also has to push
+worker image has to push
+voting.yml
+kubectl apply -f voting.yml
+we will get error bcz of images are in private registry
+do secret for docker
+ku get secrets
+echo '' > voting.yml
+ku apply -f voting.yml
+ku get pods
+ku describe pod pod-name
+google -- docker github voting
+add routes in route53 
+ingress.yml
+ku apply -f ingress.yml
+ku get ingress or ing
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+service -- Nodeport service -- opens port on each node -- exposing to the outside of the cluster
+		ports values must be btwn 30000-32767, node ip may change after restart, not secure open ports on nodes
+todo-ui and todo-api -- ingress rules -- todo.com -- todo-ui-service or todo-api-service -- need of ingress controller
+nginx-service.yml
+kubectl apply -f nginx-service.yml
+kubectl get all
+Ingress controllers 
+kubectl get po -n ingress-nginx
+kubectl get svc -n ingress-nginx
+kubectl apply -f nginx-ingress.yaml
+kubectl get ing
+vi /etc/hosts
+add k8s cluster ip and hostname in this file
+kubectl apply -f todo-ui-api.yaml
+todo-ingress-path-based.yaml
+kubectl apply -f todo-ingress-path-based.yaml
+kubectl get ingress
+Host based mapping -- UI-- todo-ui.com and API-- todo-api.com
+todo-ingress-host-based.yaml
+kubectl apply -f todo-ingress-host-based.yaml
+kubectl describe ing ingress-name
+TLS encryption 
+
+Namespaces -- avoiding conflicts, restricting access, resource limits(memory leaks)resource quota, organize resources
+default namespaces -- default, kube-node-lease, kube-public, kube-system
+kubectl create namespace nginx1
+kubectl get namespaces
+kubectl get all
+ kubectl get all --all-namespaces
+kubectl get all -n namespace-name
+kubens
+kubectl config set-context --current --namespace=nginx
+
+Volumes -- create a pod with deployment - maintain no.of replicas -- if the pod goes down/restart -- data also goes -- multiple replicas of same applicaton -- data is not shared across the pods
+sharing the data across pods
+persistent the data if the pod restart or node goes down
+- deployment.yml -- deploying mongodb -- kubectl get pod
+service.yml
+kubectl apply -f deployment.yml
+kubectl apply -f service.yml
+kubectl port-forward svc/service-name hostip:containerip
+If we store the data in container lever -- container goes -- data also goes
+To store the data at a pod level -- emptyDir(onetypeofvol)
+cd /var/lib/kubelet/pods
+kubectl get pods
+kubectl get pod pod-name -o yaml
+kubectl get pod pod-name -o jsonpath='{.metadata.uid}' -- for getting the volume id
+hostPath -- we can get the data is pod is deleted or restarted -- if the node goes down we can't get it, we can't share the data in another node pod
+PersistentVolumes -- PersistentVolumeClaims -- Storageclasses
+kubectl apply -f pv.yml
+kubectl get pv or PersistentVolumes
+Container creating -- error -- decribe pod
+pv
+pvc
+deployment
+pods -- developers create 
+pv -- admin create
+storage class 
+
+Statefulsets --  separate volume for each replica(eparate pv's),ordered pods, sticky identity(pod restart -- same name has to be come), unique names like mongo-0, mongo-1, mongo-2, sticky storage
+Headless service -- to talk to specific pod
+kubectl apply -f statefulset.yml
+kubectl get po -w
+kubectl scale sts mongo --replicas=7
+kubectl scale sts mongo --replicas=3
+kubectl get pods
+kubectl get pvc
+kubectl describe pod pod-name | grep volume
+kubectl apply -f headleass-service.yml
+kubectl get svc
+kubectl exec -it mongo-0 -- mongo
+
+ConfigMap and Secrets -- do not hardcode values, 3ways to configure data -- passing arguments,configuration files, env variables
+kubectl apply -f mongo-configmap.yml
+kubectl get cm
+kubectl apply -f statefulsets.yml
+kubectl get pods
+kubectl exec -it pod-name -- bash(env)
+
+Probes in K8s -- application unhealthy state -- bugs,timeouts while communicating with external service, db connection failures, outofmememory issues
+liveness, readiness, startup  -- define at conatainer level
+probing mechanisms -- exec (command) 0-success 1-failure, http , tcp 
+Probing customization -- initialdelayseconds-0sec, periodseconds-10sec,timeoutseconds-1sec,failure/successthreshhold-3times
+startup probe -- crashloopbackoff -- 
+
+Resource Management -- Requesting CPU, Memory , Limiting CPU and Memory, Quality of service(best effort,guarantee,burstable)
+setting min and max and default resources for pods in a namespace -- limit range
+limiting resources in a namespace --- resource quota
+resource requests -- based on the node resources it wll schedule the pod
+kubectl top pods
+metrics server -- gets the metrics from kubelet
+OOMkilled error -- 
+
+Advanced Scheduling -- nodeName, nodeSelector, Node and pod Affinity,podantiaffinity, taints and tolerations
+kubectl label node node-name team=analytics
+kubectl get nodes --show-labels
+kubectl get nodes -l team=analytics
+Taints -- NoSchedule, PreferNoSchedule, NoExexute
+
+Autoscaling in pods -- Scaling applications based on our cpu or memory or qps metrics
+hpa -- scaleup or scaledown replicas 
+vpa
+cluster autoscaler
+kubelet --> pod --  cAdvisor(collect metrics(10sec)) -- raw metrics -- kubelet -- aggregate metrics(1m) -- metrics server -- expose metrics -- api server -- query(15sec) -- calculate -- scale
+
+Daemonsets -- Based on the CPU,Memory -- Prometheus & Grafana
+Logging agent -- fluentd and logstash
+Monitoring agents -- prometheus node exporter(9100) and datadog
+networkiing -- wavenet and cilium
+kubectl get ds -A
+
+Jobs and CronJobs -- db backups and batch jobs -- one time run jobs 
+Backofflimitexceeded error
+log rotation
+data processing
+
+RBAC in K8s -- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+what is cloud?
+what is cloud computing?			(AWS Outposts, aws direct connect)
+Deployment models of cloud -- what is public and private cloud and difference between them?
+service models
+aws global infrastructure
+creation of aws account
+go to aws management console and search for support(service for contacting aws related to account, billing and technical)
+
+IAM
+users
+usergroups
+policies
+roles
+create a iam user with aws management console access and give password change for next sign-in
+after that creation of user sign-in to aws console and access the other aws services 
+give aws s3 full access and check in aws console -- if the user is accessing s3 service or not 
+create a groups in iam console for dev, test, prod 
+add the required users in the respected groups for dev/ test/prod
+For root user activate MFA authentication
+we can create alias for aws account 
+we can explore account settings in iam console and check about IAMuserchange password policy
+In root account settings iam user and role access to billing information is de-activated by default
+iam policy and request conditions
+in-line policy -- only for one-bucket deny of policy for uploading we can use -- works for only one user we can apply(switch to deny permissions)
+policies -- entities attached 
+policy simulator in iam console
+What is IAM Roles and How to configure and access AWS Services with IAM Roles( for acccesing one service from aws to another service in aws -- we can use -- iam roles)
+Ec2 want to access S3 
+-- awws configure through CLI
+-- create a role with appropriate permissions and attach to the ec2 instance(roles anywhere)
+
+
+EC2
+what is EC2?
+Types of ec2
+general purpose
+compute optimized
+memory optimized
+storage optimized
+accelated computing
+instances purchasing options in aws ec2 console
+instance types
+create an ec2 instance with keypair and required resources and deploy jenkins on EC2 server
+create an windows ec2 instance and connect using RDP protocol
+Download mobaxterm software onlocal machine for connecting ec2 instances
+Managing EBS volumes in Linux Instances
+EBS volume types
+create a volume with respect to the az, and attach to the existing instance
+lsblk
+df
+df -hT
+lsblk
+cd /dev/
+ls
+lsblk
+file -s /dev/xvdf
+file -s /dev/xvda1
+mkfs -t xfs or ext4 /dev/xvdf
+mkdir yt_vol
+mount /dev/xvdf yt_vol
+df -hT
+cat /etc/mtab
+vim /etc/fstab
+mount -all
+after that we want extra volume means we can add at modify section
+lsblk
+df -hT
+xfs_growfs 
+yum install xfsprogs
+xfs_growfs -d /dev/xvdf   -- for increasing the volume size based on the file system
+df -hT
+windows -- windows + r -- diskmgmt.msc
+create a volume of size 2gb and attach it to existing ec2 windows instance 
+again same process has to be perform in the windows indtance
+Apache configuration in Amazon Linux 2
+IIS and Basic Windows configuration -- server manager -- IE enahanced security
+EBS snapshots -- for backup purpose
+- same region -- diff az's -- snapshot
+- diff region -- copy -- snapshot
+- diff account -- sharing -- encyption has to be enable -- modify permissions -- acccount
+- anyone can use
+point in time copy -- snapshot
+sanpshots are stored in aws s3 account in back end (not in our s3 bucket -- typically in aws s3 related platform)
+incremental backup mechanism -- aws will care about it
+ encryptedebs volume  -- encryptedsnapshot created  -- volume created encrypted
+ un-encryptedebs volume --  un-encrypted snapshot -- volume create -- we have option for encypting the volume(encryption method)
+EBS life cycle manager -- automating with DLM -- Data Life Cycle Manager -- we can filter using tag - create a snapshot - with retention period
+Custom AMI // Goledn AMI
+Requirement :
+-- 10 ec2 instances -- add 2gb volume and conf apache web server
+-- 1) launch 1ec2 instance and do custom settings , then create a image -- we can launch n no.of instances
+-- 2) launch 10brand new instanes , connect each and every instance and do manual operation
+from instance -- create image 
+-- copy to another region
+-- copy to another aws account(edit ami permissions) or aws organizations or group of accounts or public for everyone
+ALB -- Target Grroups -- 
+path : index.hmtl
+ELB pings : http:80
+Response: 2sec
+Health Threshhold: 3
+Unhealth Threhhold: 2
+Interval: 5sec
+Load balancing algorithm -- round-robin -- least outstanding request(based on the server cpu usage--it will route the traffic)
+Stickyness -- it will stuck to only server -- based on cookies
+NLB --
+
+ASG's -- Launch templates
+create a golden AMI (make it as webserver)
+create an ELB (Create an empty ELB)
+create an ASG 
+- create a launch template (settings of new ec2 instance : AMI, instance type, sg, keypair)
+- create an ASG when to scale
+desired count instance == actual running instance 
+Automatic scaling -- scheduled actions
+Automatic scaling -- dynamic scaling policies, predictive scaling policies
+dynamic scaling policies -- target tracking policy, step scaling policy, simple scaling policy
+
+EFS -- Elastic file system -- SAN & NAS -- (amazon fsx)
+- works on NFS protocol 2049
+- configure efs
+- mount efs file to the /var/www/html and see the data from server1 to reflecting server2
+
+AWS CLI
+aws configure
+aws s3 ls
+aws s3 make s3://mahesh.yt-demo
+aws ec2 describe-instances
+aws ec2 describe-instances --region us-east-1
+aws iam list-users
+aws s3 ls --debug
+aws confiure --profile uat
+- uataccceskey
+- uatsecretkey
+
+status checks -- system status checks, instance status checks
+shared security responsibility model
+placement groups -- cluster, partition, spread -- rack spread, host level
+
+DNS -- Route53 -- 
+create a hosted zone -- it will create a 2record -- soa -start of authority and ns -- name server
+Routing policies -- simple, weighted, latency, geolocation, failover(need to configure health check), multi-value answer, ip-based
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+what is git?
+
+git advantages & disadvantages?
+
+installation of git?
+
+git config --global user.name "MaheshGontla"
+git config --global user.mail "mail-id"
+git config --list
+git config --global --edit
+vi .gitconfig
+
+
+mkdir firstproject
+cd firstproject
+git status
+git init
+git status
+touch a.txt
+git status
+git add . or git add a.txt or git add *
+git status
+git commit -m "first commit"
+git status
+git log
+git log --oneline
+git show commit-ID
+git diff first-commit-ID..second-commit-ID 
+git log --oneline --author='MaheshGontla'
+touch .gitignore
+vi .gitignore
+
+Github account creation
+create a repository on github
+add the github repository as remote
+git remote add origin 
+git push -u origin master
+github setttings -- developer settings -- personal access tokens -- tokens -- generate new token -- use this token after applying the above command
+
+Branching in GitHub
+branches helps you manage diff versions of your project and work on multple environments simultaneously without affecting the main or other branches
+mkdir mycode
+cd mycode
+git init
+git status
+git branch
+touch 1.txt
+git status
+git add . or file-name
+git commit -m "commit message"
+git status
+git branch
+git branch branch-name(instamart)
+git branch
+git status
+git checkout branch-name(instamart)
+git branch
+git status
+touch insta{1..3}.txt
+git status
+git add .
+git commit -m "commit message"
+git status
+git branch
+git checkout -b dinein(branch-name)
+git branch
+git status
+ls -ll
+touch dinein{1..3}.txt
+ls -ll
+git status
+git add .
+git commit -m "commit message"(added dinein code)
+git checkout master
+git checkout -b movie
+touch movie{1..3}.txt
+git status
+ls -ll
+git branch
+git add .
+git commit -m "commit message"
+git status
+git branch
+git checkout master
+git merge movie
+git merge dinein
+git branch -d movie(branch-name) or D(forcefully)
+
+
+
+
+
+
+
+
+Observability & Monitoring
+Monitoring -- Catching early bugs is better
+know what to monitor
+limit alerts
+latency issues -- app is very slow
+Monitoring -- Improved performance -- Enabling application health, optimization scaling and enhancements
+Monitoring -- Latency, Traffic, errors, Saturation
+Latency -- time it takes for a request to travel from the clients to the server and the back
+Traffic -- no.of requests a system receives over a specific period
+Erros -- percentage of requests, 404error, 500
+Saturation -- measures resource utilization including cpu memory and disk space
+
+Observability -- logs, metrics and traces -- find the root cause analysis quicker, 
+it provides a chronlogical record of events or transctions within a system
+it provides insights like when something happened and what exactly happened
+Elasticsearch log stash, grafana loki -- Logs
+Metrics -- 
+prometheus -- collects the metrics from various sources such as k8s nodes,k8s services etc, -- it provides alerting and querying mechanism
+Logs + Metrics =combined= Traces -- brings better insights -- troubleshoot issues faster -- helps us to track the flow of requests for various services and components of a system 
+Traces -- decide what to log , cleanup logs
+identifying the problems, delivering high quality user experience 
+Inside Observability(details about the problem, dig deeper and discover the root cause ) -- monitoring(alerts or notifies about the problem) will come 
+Prometheus -- Metric -- Time series data -- alerting/visualization
+Prometheus server -- collects metrics -- stores in TSDB -- provides an API -- pulls/scrapes the metrics from prometheus targets
+Prometheus Node exporter -- fetching the existing metrics -- convert to prometheus format -- expose via an api 
+service discovery 
+prometheus UI -- data visualization and export -- API clients -- Grafana -- PromQL
+Service discovery --  scrape all endpoints of k8s -- endpoints,service,pod,node,ingress,endpointslice
+Custom Metrics -- Counter,Gauge,Histogram,Summary
+Counter -- requests count, no.of todo items created -- increasing
+Gauge -- memory usage, no.of pending todo items
+Histogram -- range of bucket requests -- respone time -- count
+Summary -- avg response time,percentile
+PromQL -- get metrics we r interested in, aggregate metrics,build dashboards,setup alerts
+Prometheus Push Gateway -- for short lived jobs/batch jobs/lambda functions -- run few secs -- may not fetch 
+metrics for short time
+(pushgateway)short lived jobs -- POST/metrics -- push gateway -- prometheus -- jobs/exporters -- prometheus targets
+Exporters in promethues -- fetch metrics,convert to prometheus format,expose via an API
+
+Grafana -- loki -- flexible dashboards,support for different data sources,variety of visualization options,alerting
+user management,open source and active community
+Grafana installation
+Grafana data sources -- 
+Grafana Dashboards --
+Grafana dynamic dashboards -- 
+Grafana alerting -- 
+
+Helm Charts -- define,install,upgrade for complex applications in k8s
+helm install nginx -- chart -- package -- install
+helm version 
+helm create todo-api
+cd todo-api
+helm lint .
+helm template .
+helm list
+helm upgrade
+helm history
+
+artifact hub
+
+
+pipeline aws steps 
+amazon ec2 plugins
+
+
+
+
+
+
+
+go to godaddy.com and buy a domain
+
+search for .shop(azuredevops.shop)
