@@ -1,0 +1,138 @@
+Build with parameters -- deploy_env using docker_tag for blue to green
+env 
+
+application contains -- Mysql db, java-html (front and backend)
+
+mysql pod --> svc type(clusterip-internal communication)
+application-pod -->  svc type(LB) -- user-requests
+    
+user-requests --> LB type svc --> application-pod --> clusterip svc of mysql --> mysql pod
+
+create an ubuntu ec2 instance with t2.medium 
+
+update the system 
+
+need to configure aws cli on instance
+
+aws configure
+
+need to install terraform on instance
+
+using terraform need to provision eks cluster and install kubectl on it
+
+create another instances for jenkins,sonarqube,nexus of t2.medium
+
+connect to jenkins instance and install jenkins and java 
+
+connect to nexus instance and install docker  and run nexus usind docker
+
+connect to sonarqube instance and install docker and run sonarqube using docker
+
+sonar - 9000(admin admin is username and passwd) nexus - 8081(username admin passwd is stored in /nexus-data/admn.password )
+need to connect to nexus container -- docker exec -it container-id /bin/bash
+ls
+cd sonatype-work/
+ls
+cd nexus/
+ls
+cat admin.password
+
+
+trivy--filesystem scan and depedency check
+connect to jenkins server and install docker on it 
+urlofjenkins/restart
+eclipse tumerin installer
+pipeline stage view
+trivy plugin is not there so have to install trivy and kubectl
+install plugins -- sonarqube scanner, configfile provider, maven integration
+pipeline maven integration, pipeline stage view, docker, docker pipeline
+kubernetes, kubernetes client api, kubernetes credentials, kubernetes cli
+create a job with name blue-green and pipeline 
+enable discard old build 
+create a pipeline
+
+manage jenkins --> tools --> maven and sonar install 
+add credentials for sonarqube in credentials section
+secret text --> 
+system settings -- configure sonarqube server -- give ip of the sonar server
+manage jenkins --> managed files --> add a new config --> global maven settings.xml --> id:maven-settings --> next --> in this we have to credentials for nexus    
+>
+<server>
+    <id>maven-releases</id>
+    <username>admin</username>
+    <password>passwd</password>
+</server>
+
+<server>
+    <id>maven-snapshots</id>
+    <username>admin</username>
+    <password>passwd</password>
+</server> and save this
+take the url of maven-releases and paste in github pom.xml
+samething has to do for snapshots also
+
+
+
+go to maven dashboard --> maven releases and maven snapshots -->
+pipeline{
+    agent any {
+    tools{
+        maven 'maven-3'
+    }
+    environment{
+        SCANNER_HOME= tool 'sonar-scanner'
+    }
+    stages{
+        stage("git checkout stage"){ #if it is private repo means have to add credentials
+            steps{ #find out issues at early stages
+                    git checkout through generator
+                }
+            }
+        stage("compile"){
+            steps{
+                sh 'mvn compile'
+                }
+            }
+        stage("Tests"){
+            steps{
+                sh 'mvn test -DskipTests=true'
+               }
+            }
+        }
+        stage("Trivy FS Scan"){
+            steps{
+                sh 'trivy fs --format table -o fs.html'
+            }
+        }
+        stage("sonarqube analysis"){
+            steps{
+                withSonarQubeEnv('sonar'){
+                    sh '$SCANNER_HOME/bin/sonar-scanner'
+                }
+            }
+        }
+        stage("")
+    }
+}
+
+
+
+connect to the eks provisioned instance and run below cmds
+kubectl get nodes
+aws eks --region ap-south-1 update-kubeconfig --name cluster-name
+kubectl get nodes
+vi sa.yml
+create RBAC's
+create a namespace webapps
+kubectl apply -f sa.yml
+vi role.yml
+kubectl apply -f role.yml
+vi rolebind.yml
+kubectl apply -f rolebinding.yml
+create a secret-token for service account
+vi sec.yml
+kubectl apply -f sec.yml -n webapps
+kubectl describe secret mysecretname -n webapps
+it will generate token and use that token to authenticate in jenkins credentials section
+manage jenkins --> credentials --> system --> global credentials --> kind secret text
+id : k8s-token
